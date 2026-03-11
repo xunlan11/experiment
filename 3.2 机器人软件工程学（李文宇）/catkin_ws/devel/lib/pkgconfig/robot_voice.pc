@@ -1,8 +1,0 @@
-prefix=/home/zhaopengyu/catkin_ws/devel
-
-Name: robot_voice
-Description: Description of robot_voice
-Version: 1.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

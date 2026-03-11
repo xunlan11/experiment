@@ -1,3 +1,0 @@
-/home/robot/桌面/机器人软件工程学/homework1/homework1/CMakeFiles/rebuild_cache.dir
-/home/robot/桌面/机器人软件工程学/homework1/homework1/CMakeFiles/edit_cache.dir
-/home/robot/桌面/机器人软件工程学/homework1/homework1/CMakeFiles/display.dir

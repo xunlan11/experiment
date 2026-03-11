@@ -1,8 +1,0 @@
-prefix=/home/zhaopengyu/catkin_ws/install
-
-Name: forruan
-Description: Description of forruan
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
