@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+import rospy
+from std_msgs.msg import Float64
+import time
+
+class MultiJointControl:
+    def __init__(self, max_runtime):
+        rospy.on_shutdown(self.cleanup)  # 注册清理函数
+        self.max_runtime = max_runtime    # 最大运行时间（秒）
+        self.start_time = time.time()     # 记录启动时间
+        
+        # 初始化5个关节的发布者
+        self.joint_publishers = [
+            rospy.Publisher(f"/motor{i}_controller/command", Float64, queue_size=10)
+            for i in range(1, 6)  # 生成 motor1~motor5 的发布者
+        ]
+        
+        # 等待发布者注册（避免消息丢失）
+        rospy.sleep(0.5)
+        
+        # 执行运动序列
+        self.execute_motion_sequence()
+        
+        # 设置定时器检查是否超时（每0.1秒检查一次）
+        self.timer = rospy.Timer(rospy.Duration(0.1), self.check_runtime)
+    
+    def check_runtime(self, event):
+        """检查是否超过最大运行时间"""
+        elapsed = time.time() - self.start_time
+        if elapsed > self.max_runtime:
+            rospy.loginfo(f"已达到最大运行时间 {self.max_runtime} 秒，停止程序")
+            self.timer.shutdown()  # 停止定时器
+            rospy.signal_shutdown("最大运行时间到达")  # 关闭ROS节点
+    
+    def execute_motion_sequence(self):
+        """执行完整的运动序列"""
+        rospy.loginfo("开始执行运动序列")
+        self.move_to_first_positions()
+        # 移动到初始位置
+        # self.move_to_initial_positions()
+        
+        # 第五关节额外运动
+        # self.move_joint5_additional()
+        
+        # 移动到目标位置
+        # self.move_to_target_positions()
+    
+    def move_to_first_positions(self):
+        """每个关节移动到目标位置"""
+        target_positions = [-1.5, -1.6, 1.1, 0.3, 0]  # 关节1-5的目标位置(弧度)
+        
+        self._publish_each_joint(target_positions)
+        rospy.loginfo("移动关节到初始位置:")
+        for i, pos in enumerate(target_positions, 1):
+            rospy.loginfo(f"  关节 {i}: {pos} 弧度")
+        rospy.sleep(1.0)
+    
+    def move_to_initial_positions(self):
+        """所有关节移动到拾取位置"""
+        initial_positions = [-1.5, -2.3, 1.2, -0.5, 2]  # 关节1-5的初始位置(弧度)
+        
+        self._publish_each_joint(initial_positions)
+        rospy.loginfo("移动关节到拾取位置:")
+        for i, pos in enumerate(initial_positions, 1):
+            rospy.loginfo(f"  关节 {i}: {pos} 弧度")
+        rospy.sleep(1.0)
+    
+    def move_to_target_positions(self):
+        """每个关节移动到目标位置"""
+        target_positions = [-1.5, -1.8, 0.5, 0.5, 0]  # 关节1-5的目标位置(弧度)
+        
+        self._publish_each_joint(target_positions)
+        rospy.loginfo("移动关节到目标位置:")
+        for i, pos in enumerate(target_positions, 1):
+            rospy.loginfo(f"  关节 {i}: {pos} 弧度")
+        rospy.sleep(1.0)
+    
+    def move_joint5_additional(self):
+        """第五关节额外运动"""
+        rospy.loginfo("准备第五关节的额外运动...")
+        rospy.sleep(1.0)  # 等待2秒
+        
+        # 第五关节新目标位置
+        joint5_new_position = 0  # 弧度
+        
+        # 只移动第五关节
+        msg = Float64()
+        msg.data = joint5_new_position
+        self.joint_publishers[4].publish(msg)  # 索引4对应第五关节
+        
+        rospy.loginfo(f"第五关节移动到额外位置: {joint5_new_position} 弧度")
+        rospy.sleep(2.0)  # 等待运动完成
+    
+    def _publish_all_joints(self, position):
+        """同时发布5个关节的相同位置指令"""
+        msg = Float64()
+        msg.data = position
+        for pub in self.joint_publishers:
+            pub.publish(msg)
+    
+    def _publish_each_joint(self, positions):
+        """分别发布5个关节的不同位置指令"""
+        for pub, pos in zip(self.joint_publishers, positions):
+            msg = Float64()
+            msg.data = pos
+            pub.publish(msg)
+    
+    def cleanup(self):
+        """关闭节点时的清理工作"""
+        rospy.loginfo("关闭节点...")
+        # 添加任何需要的清理代码，如停止机器人运动等
+        # 例如：停止所有关节运动
+        rospy.loginfo("清理完成")
+
+if __name__ == "__main__":
+    try:
+        rospy.init_node("multi_joint_control")  # 初始化节点
+        max_runtime = 3  # 最大运行时间（秒）
+        rospy.loginfo(f"启动节点，将在 {max_runtime} 秒后自动停止")
+        controller = MultiJointControl(max_runtime)
+        rospy.spin()  # 保持节点活跃
+    except rospy.ROSInterruptException:
+        rospy.loginfo("节点被中断")

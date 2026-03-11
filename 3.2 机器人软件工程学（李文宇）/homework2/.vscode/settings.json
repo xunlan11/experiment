@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "types.h": "c",
+        "in.h": "c",
+        "cmath": "c",
+        "complex": "c",
+        "functional": "c",
+        "socket.h": "c",
+        "stdlib.h": "c",
+        "*.tcc": "c",
+        "fstream": "c",
+        "stdio.h": "c"
+    }
+}

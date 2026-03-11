@@ -1,0 +1,39 @@
+<launch>
+    <!-- ******************** 已删除原驱动节点 *********************** -->
+    <!-- 原 walk 包驱动已不再需要，Kobuki 驱动应通过其他方式启动 -->
+    
+    <!-- 激光雷达驱动保持原配置（假设仍使用 RPLIDAR） -->
+    <node pkg="rplidar_ros" type="rplidarNode" name="laser_driver">
+        <param name="serial_port" value="/dev/ttyUSB0"/>
+        <!-- 新增关键重映射 -->
+        <remap from="/scan" to="/kobuki/laser_scan"/>  <!-- 如果雷达话题需要重命名 -->
+    </node>
+
+    <!-- 调整 TF 发布参数（根据 Kobuki 实际结构） -->
+    <node pkg="tf" type="static_transform_publisher" name="base_to_laser"
+          args="0.15 0 0.1 0 0 0 base_footprint laser 100"/>  <!-- Kobuki 基座坐标系通常为 base_footprint -->
+
+    <!-- 修改 gmapping 配置适配 Kobuki -->
+    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping">
+        <remap from="scan" to="/kobuki/laser_scan"/>  
+        <!-- Kobuki 的里程计和坐标系 -->
+        <param name="base_frame" value="base_footprint"/>  <!-- Kobuki 标准坐标系 -->
+        <param name="odom_frame" value="odom"/>
+        <!-- 优化参数 -->
+        <param name="linearUpdate" value="0.1"/>
+        <param name="angularUpdate" value="0.2"/>
+    </node>
+
+    <!-- 修改键盘控制话题映射 -->
+    <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop">
+        <!-- Kobuki 实际控制话题 -->
+        <remap from="cmd_vel" to="/mobile_base/commands/velocity"/> 
+        <!-- 调整速度限制 -->
+        <param name="speed_linear" value="0.5" type="double"/>
+        <param name="speed_angular" value="1.0" type="double"/>
+    </node>
+
+    <!-- 更新 RViz 配置路径 -->
+    <node pkg="rviz" type="rviz" name="rviz" 
+          args="-d $(find water_slam)/config/slam.rviz"/>
+</launch>

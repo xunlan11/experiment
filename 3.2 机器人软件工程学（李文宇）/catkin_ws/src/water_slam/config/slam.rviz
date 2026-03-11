@@ -1,0 +1,44 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Name: Tool Properties
+Visualization Manager:
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: odom
+  Displays:
+    - Alpha: 0.7
+      Cell Size: 0.5
+      Color: 255; 255; 255
+      Enabled: true
+      Name: Map
+      Topic: /map
+      Value: true
+      Class: rviz/Map
+    - Color: 255; 0; 0
+      Enabled: true
+      Name: LaserScan
+      Topic: /original/scan
+      Class: rviz/LaserScan
+    - Alpha: 0.5
+      Color: 0; 255; 0
+      Enabled: true
+      Name: Pose
+      Topic: /odom
+      Class: rviz/Odometry
+    - Enabled: true
+      Marker Topic: /particlecloud
+      Name: ParticleCloud
+      Class: rviz/ParticleCloud
+    - Enabled: true
+      Name: TF
+      Class: rviz/TF
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/SetInitialPose
+    - Class: rviz/SetGoal

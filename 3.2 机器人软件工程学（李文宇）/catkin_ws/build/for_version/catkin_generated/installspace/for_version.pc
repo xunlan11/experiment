@@ -1,0 +1,8 @@
+prefix=/home/zhaopengyu/catkin_ws/install
+
+Name: for_version
+Description: Description of for_version
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

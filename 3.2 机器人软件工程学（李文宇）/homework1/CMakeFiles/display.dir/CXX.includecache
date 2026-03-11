@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/robot/桌面/机器人软件工程学/homework1/homework1/display.cpp
+iostream
+-
+opencv2/opencv.hpp
+/home/robot/桌面/机器人软件工程学/homework1/homework1/opencv2/opencv.hpp
+
